@@ -6,6 +6,10 @@ import GetMenu from './get-menu';
 import SourceFrame from './source-frame';
 
 class PageFetch {
+  /**
+   * Fetaches a reportal report page and loads it in an iframe
+   * @param {HTMLElement} [menu] - a UL element that contains a reportal menu on the page
+   * */
   constructor(menu){
     /**
      * an array with menu items. See {@link GetMenu} for details
@@ -19,13 +23,17 @@ class PageFetch {
      * @memberOf PageFetch
      * */
      this.sourceFrame = new SourceFrame();
-
+    /**
+     * a promise that contains Window object of the iframe
+     * @type {Promise.<Window>}
+     * @memberOf PageFetch
+     * */
      this.sourceWindow = PageFetch.pageInitializer.call(this);
   }
 
   /**
    * Function that initializes to the first page in report if the VR mode is launched with no `location.query.frompage` parameter in URL, otherwise launches with the pageid specified in `frompage` parameter
-   * @return {Promise.<Window>} Returns a promise with a contentWindow of the iFrame
+   * @returns {Promise.<Window>} Returns a promise with a contentWindow of the iFrame
    * */
   static pageInitializer(){
     let pagelocation = PageFetch.locationDeserialize();
@@ -39,7 +47,7 @@ class PageFetch {
    * Fetches a document from the iframe and returns a Promise received when document is loaded.
    * @param {Object} swapObject - an object containing the key-value pairs of properties that need changing when loading the new page.
    * @param {Boolean} [fromFrame=false] - whether the `window.location` must be taken from the host page or the previously loaded iframe (PageStateId might be different)
-   * @return {Promise.<Window>} Returns a promise with a contentWindow of the iFrame
+   * @returns {Promise.<Window>} Returns a promise with a contentWindow of the iFrame
    * */
   fetch(swapObject, fromFrame=this.sourceFrame.initialized){
     if(swapObject){
@@ -69,7 +77,7 @@ class PageFetch {
   /**
    * turns `window.location` object into an object with params as named keys necessary to reconstruct the URL
    * @param {Object=} [location = window.location] - a window.location object, by default of the host window where the script is executed
-   * @return {{path:String, query:Object}} a `location` object
+   * @returns {{path:String, query:Object}} a `location` object
    * */
   static locationDeserialize(location = window.location){
     let o = {
@@ -86,7 +94,7 @@ class PageFetch {
   /**
    * Turns a `location` object (result of `locationDeserialize`) into a URL
    * @param {{path:String, query:Object}} location - an object with params and a url
-   * @return {String} - a URL string
+   * @returns {String} - a URL string
    * */
   static locationSerialize(location){
     let query=[];

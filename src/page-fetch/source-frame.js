@@ -3,15 +3,28 @@
  */
 
 class SourceFrame{
+  /**
+   * Creates an iframe and provides a `load` method to load content into it
+   * */
   constructor(){
+    /**
+     * the iframe element
+     * @type {HTMLFrameElement}
+     * @memberOf SourceFrame
+     * */
     this.element = SourceFrame.createIframe();
     this._lastListener = null;
+    /**
+     * initialized status of the iframe speaks whether the content has been loaded into it
+     * @type {Boolean}
+     * @memberOf SourceFrame
+     * */
     this.initialized = false;
   }
 
   /**
    * Creates an iframe that will be responsible for all communications with the report
-   * @return {HTMLFrameElement}
+   * @returns {HTMLFrameElement}
    * */
   static createIframe(){
       let iframe = document.createElement('iframe');
@@ -23,7 +36,7 @@ class SourceFrame{
   /**
    * loads a document into the iframe by an `src`
    * @param {String} src - a URL to load document from
-   * @return {Promise} A Promise containing the window object of the iframe when it loads
+   * @returns {Promise} A Promise containing the window object of the iframe when it loads
    * */
   load(src){
     this.element.removeEventListener('load',this._lastListener);

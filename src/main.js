@@ -10,7 +10,7 @@ import variables from "./variables";
 import RVRutils from "./rvr-utils"
 import RVRreport from "./rvr-report"
 
-let RVR = window.RVR = window.RVR || {};
+let RVR = window.RVR || {};
 RVRutils.mixin(window.RVR,{
   variables,
   utils: RVRutils,

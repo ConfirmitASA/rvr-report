@@ -4,10 +4,10 @@
 
 import variables from "./variables"
 
+/** class with utilities for RVR */
 class RVRutils {
   /**
    * Copies props from a source object to a target object.
-   * @method mixin
    * @param {Object} target Target object to copy properties to.
    * @param {Object} source Source object to copy properties from.
    * @return {Object} Target object that was passed as first argument.

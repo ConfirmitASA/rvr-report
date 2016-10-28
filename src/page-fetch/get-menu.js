@@ -5,7 +5,7 @@
 /**
  * Retrieves a menu from the page, passed as a parameter. If left blank, takes the menu from the page where it was called.
  * @param {HTMLElement} [source=document.querySelector('div.yui3-menu ul')] - the first UL that contains the menu
- * @return {{label:String, pageID:string}}
+ * @returns {{label:String, pageID:string}}
  * */
 class GetMenu{
   constructor(source=document.querySelector('div.yui3-menu ul')){
@@ -15,6 +15,12 @@ class GetMenu{
     }
     return mArray;
   }
+
+  /**
+   * iterates through all menu items of a Reportal Menu and creates an object
+   * @param {NodeCollection} items - UL items in the menu
+   * @param {NodeCollection} obj - menu array
+   * */
   static iteration(items, obj){
     if(items){
       let liLength = items.children.length;
