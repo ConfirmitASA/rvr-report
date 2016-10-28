@@ -4,22 +4,22 @@
   <meta charset="UTF-8">
   <title>Visual test</title>
   <script src="../../node_modules/webcomponents.js/src/HTMLImports/HTMLImports.js"></script>
+  <script src="../../node_modules/aframe/dist/aframe-v0.3.2.js"></script>
   <script src="../../node_modules/r-visual-fixture-test/src/visual-fixture-test.js"></script>
 
-  <!--script src="../../dist/module.bundle.js"></script-->
+  <script src="../../dist/rvr-report.bundle.js"></script>
   <!--link rel="stylesheet" href="../../dist/styles.css"-->
 
 
   <script>
-    /*testFixture('fixture-name',function(){
-      var tableTest = new Reportal.SortTable({
-        source: document.querySelector('table'),
-        data: [['foo','bar']]
-      });
-    });*/
+    console.log(new RVR.report());
+    testFixture(function(){
+        console.log(AFRAME);
+        console.log(RVR);
+    });
   </script>
 
-  <!--link rel="import" href="../__tests__/fixtures/fixture-name.html"-->
+  <link rel="import" href="../__tests__/fixtures/fixture-name.html">
 
 </head>
 <body></body>

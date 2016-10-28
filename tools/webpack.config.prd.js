@@ -42,7 +42,7 @@ config.postcss =  function (webpack) {
     require("postcss-cssnext")({
       browsers:AUTOPREFIXER_BROWSERS
     }),
-    require('cssnano')()
+    // require('cssnano')()
   ];
 }
 

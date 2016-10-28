@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visual test</title>
+  <script src="../node_modules/aframe/dist/aframe-v0.3.2.js"></script>
+
+  <script src="../dist/rvr-report.bundle.js"></script>
+  <link rel="stylesheet" href="../dist/rvr-report.css">
+
+  <script>
+    console.log(new RVR.report());
+  </script>
+
+
+</head>
+<body>
+<a-scene>
+  <a-assets>
+    <img id="floor" src="https://cdn.aframe.io/a-painter/images/floor.jpg" crossorigin="anonymous">
+    <img id="skymap" src="./img/sky.jpg" crossorigin="anonymous">
+    <img id="skymap1" src="./img/tycho_cyl_glow.png" crossorigin="anonymous">
+    <!--img id="skymap" src="https://cdn.aframe.io/a-painter/images/sky.jpg" crossorigin="anonymous"-->
+    <!--img id="mockup" src="" crossorigin="anonymous"-->
+  </a-assets>
+
+  <!-- lights -->
+  <a-light type="point" light="color: #fff; intensity:0.6" position="3 10 1"></a-light>
+  <a-light type="point" light="color: #fff; intensity:0.2" position="-3 -10 0"></a-light>
+  <a-light type="hemisphere" groundcolor="#888" intensity="0.8"></a-light>
+
+
+  <a-entity id="textPlane_1.3m" geometry="primitive:cylinder;height:1.5;openEnded:true;radius:1.3;segmentsRadial:48;thetaLength:110" material="opacity:0.0;shader:flat;side:double;transparent:true;color:#ff0000;repeat:-1 1" rotation="0 125 0" scale="1 1 1" position="0 1.5 0"> </a-entity>
+
+  <!-- 2 meters guidelines-->
+  <a-entity id="guideline_2m"
+            geometry="primitive:cylinder; height:3; openEnded:true; radius:2.02; segmentsRadial:48; thetaLength:204; thetaStart:78"
+            material="opacity:0.1; shader:flat; side:double; transparent:false; color:#ffffff; repeat:-1 1;"
+            rotation="0 0 0"
+            scale="1 1 1"
+            position="0 1.5 0"></a-entity>
+  <a-entity id="guideline_2m_periferalL" geometry="primitive:cylinder;height:3;openEnded:true;radius:2.01;segmentsRadial:48;thetaLength:25;thetaStart:-102" material="opacity:0.0;shader:flat;side:double;transparent:true;color:#ff8000;repeat:-1 1" rotation="0 00" scale="1 1 1" position="0 1.5 0"> </a-entity>
+  <a-entity id="guideline_2m_periferalR" geometry="primitive:cylinder;height:3;openEnded:true;radius:2.01;segmentsRadial:48;thetaLength:25;thetaStart:77" material="opacity:0.0;shader:flat;side:double;transparent:true;color:#ff8000;repeat:-1 1" rotation="0 00" scale="1 1 1" position="0 1.5 0"> </a-entity>
+
+
+  <a-entity id="box" cursor-listener="" class="link" geometry="primitive: box" material="color: blue"></a-entity>
+
+  <!---Sky and floor-->
+  <a-entity id="groundPlatter"
+            geometry="primitive: circle; radius: 8;"
+            rotation="-90 0 0"
+            material="shader: flat; src: #floor"
+            position="0 0.1 0"></a-entity>
+  <a-entity id="basicGround"
+            geometry="primitive: circle; radius: 20;"
+            rotation="-90 0 0"
+            material="shader: flat; color:#000;"></a-entity>
+  <a-entity id="sky"
+            geometry="primitive:sphere; radius:20; phiLength:360; phiStart:0; thetaLength:90"
+            material="shader:flat; side:back; height:2048; src:#skymap; width:2048; opacity:0"></a-entity>
+  <a-entity id="sky1"
+            geometry="primitive:sphere; radius:20; phiLength:360; phiStart:0; thetaLength:180"
+            material="shader:flat; side:back; height:2048; src:#skymap1; width:2048">
+    <a-animation attribute="rotation"
+                 dur="3600000"
+                 fill="forwards"
+                 to="360 0 0"
+                 repeat="indefinite" easing="linear"></a-animation>
+  </a-entity>
+
+  <!--camera and cursor-->
+  <a-entity position="0 1.6 0">
+    <a-entity id="camera" camera look-controls>
+      <a-entity id="cursor"
+                raycaster="objects: .link"
+                cursor="fuse:false"
+                geometry="primitive: circle; radius:0.002"
+                material="shader: flat; opacity:0.3 "
+                position="0 0 -1"
+                animation__over="property: scale; startEvents: raycaster-intersection; from:5 5 5; to: 1 1 1; dur:150"
+                animation__out="property: scale; startEvents: raycaster-intersection-cleared; from:5 5 5; to: 1 1 1;dur:150"
+                animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150"
+                animation__fusing="property: fusing; startEvents: fusing; from: 1 1 1; to: 0.1 0.1 0.1; dur: 1500"
+                event-set__1="_event: mouseenter; material.color: springgreen; material.opacity: 0.6"
+                event-set__2="_event: mouseleave; material.color: white; material.opacity:0.3"></a-entity>
+    </a-entity>
+  </a-entity>
+
+</a-scene>
+
+
+</body>
+</html>
