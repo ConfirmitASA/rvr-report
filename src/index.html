@@ -8,13 +8,14 @@
   <script src="../dist/rvr-report.bundle.js"></script>
   <link rel="stylesheet" href="../dist/rvr-report.css">
 
-  <script>
-    console.log(new RVR.report());
-  </script>
 
 
 </head>
 <body>
+<script>
+  window.RVR = window.RVR || {};
+  RVR.state = new RVR.report();
+</script>
 <a-scene>
   <a-assets>
     <img id="floor" src="https://cdn.aframe.io/a-painter/images/floor.jpg" crossorigin="anonymous">

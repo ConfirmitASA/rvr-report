@@ -20,7 +20,7 @@ class RVRutils {
   }
 
   /**
-   * Gets a color/opacity palette from variables.js
+   * Gets a color/opacity palette from variables.js If no palette `name` is passed, it gets he default userPalette
    * @param {String} [name] - palette name
    * */
   static getPalette(name){
@@ -47,6 +47,37 @@ class RVRutils {
       }
     } else {
       throw new TypeError('variables are empty')
+    }
+  }
+
+  static createEntity(name,batch,properties){
+    let entity;
+    if(typeof name == 'string' && name.indexOf('a-')==0 && name!=null){ // name for entity is specified
+      entity = document.createElement(name);
+    } else {
+      entity = document.createElement('a-entity');
+    }
+    if(typeof properties == 'object'){
+      RVRutils.setProperties(entity, batch, properties);
+    }
+    return entity
+  }
+
+  static setProperties(entity, batch, props, parentProp){
+    for(let key in props){
+      let prop;
+      /*if(typeof props[key] == 'object' && props[key].x){ //it value is a string, or object
+        prop = AFRAME.utils.coordinates.stringify(props[key]);
+      }*/
+      if(batch) {
+        entity.setAttribute(key , props[key])
+      } else {
+        if(!(typeof props[key] == 'object' && !props[key].x)){
+          typeof parentProp == 'string'?entity.setAttribute(parentProp, key , props[key]): entity.setAttribute(key , props[key]);
+        } else if(typeof props[key] == 'object'){
+          RVRutils.setProperties(entity, props[key], key);
+        }
+      }
     }
   }
 }

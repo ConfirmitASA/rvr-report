@@ -3,18 +3,23 @@
  */
 //require('aframe/build/aframe.js');
 let styles = require('./styles.css');
-//require('aframe-event-set-component');
-//require('aframe-animation-component');
+require('aframe-event-set-component');
+require('aframe-animation-component');
+require('aframe-bmfont-text-component');
 
 import variables from "./variables";
 import RVRutils from "./rvr-utils"
 import RVRreport from "./rvr-report"
 
-let RVR = window.RVR || {};
+var RVR = window.RVR = window.RVR || {};
 RVRutils.mixin(window.RVR,{
   variables,
   utils: RVRutils,
-  report: RVRreport
+  report: RVRreport,
+  state: new RVRreport() // this initializes RVR.report on the page
 });
+
+require('./aframe/arch-layout');
+require('./aframe/rvr-aframe-menu');
 
 export default RVR
