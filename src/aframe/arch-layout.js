@@ -18,12 +18,10 @@ AFRAME.registerSystem('sticky-arch-layout', {
       margin = data.margin/data.radius,
       direction = data.direction || -1;
 
-    console.log(mLength);
 
     for(let i=0; i<mLength.length; i++)
     {
       fromStart = direction * margin/2 + direction * Math.abs(Math.atan(mLength[i]/(2*radius)));
-      console.log(fromStart)
       startPointOnCircle = startPointOnCircle+fromStart;
 
       positions.push({
@@ -39,6 +37,11 @@ AFRAME.registerSystem('sticky-arch-layout', {
     return positions;
 
   },
+
+  centerArch:function(data,mLengths){
+    return 180*(mLengths.reduce((a, b) => a + b, data.margin*mLengths.length)/data.radius)/(Math.PI*2);
+  },
+
   /**
    * Set position on child entities.
    *
@@ -80,7 +83,7 @@ AFRAME.registerComponent('sticky-arch-layout', {
   /**
    * Store initial positions in case need to reset on component removal.
    */
-  update: function () {
+  init: function () {
     let self = this;
     let el = this.el;
 
@@ -91,30 +94,32 @@ AFRAME.registerComponent('sticky-arch-layout', {
     this.children.forEach(function getInitialPositions (childEl) {
       if (childEl.hasLoaded) { return _getPositions(); }
       childEl.addEventListener('loaded', _getPositions);
-      function _getPositions () {
+      function _getPositions (e) {
         let position = childEl.getComputedAttribute('position');
         self.initialPositions.push(position);
         self.lengths.push(AFRAME.utils.entity.getComponentProperty(childEl,'geometry.width'));
+        self.update();
       }
     });
 
     el.addEventListener('child-attached',  (evt)=>{
+      console.log('child-attached',evt.detail.el, evt);
       // Only update if direct child attached.
       if (evt.detail.el.parentNode !== el) { return; }
       this.children.push(evt.detail.el);
-      //this.update();
+      this.update();
     });
-    let startPosition = this.el.getAttribute('position');
-    console.log(this.lengths);
-    let positions = this.system.getSeparatedCirclePositions(this.data, this.lengths, startPosition);
-    console.log(positions);
-    this.system.setPositions(this.children, positions);
-
   },
+
 
   /**
    * Update child entity positions.
    */
+  update:function(oldData){
+    let startPosition = this.el.getAttribute('position');
+    let positions = this.system.getSeparatedCirclePositions(this.data, this.lengths, startPosition);
+    this.system.setPositions(this.children, positions);
+  },
 
   /**
    * Reset positions.
