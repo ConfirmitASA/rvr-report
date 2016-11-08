@@ -2,7 +2,7 @@
  * Created by IvanP on 28.10.2016.
  */
 
-import GetMenu from './get-menu';
+import GetMenu from 'rvr-get-menu';
 import SourceFrame from './source-frame';
 
 class PageFetch {
