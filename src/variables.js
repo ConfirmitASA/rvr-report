@@ -7,9 +7,9 @@ export default {
     default: {
       primary:{
         opacity:1,
-        darkColor: "#3f3f3f",
-        defaultColor: "#e1e4e9",
-        lightColor: "#f0f2f5",
+        darkColor: "#20c023",
+        defaultColor: "#21e929",
+        lightColor: "#a7ffa4",
         textColor: "#FFFFFF"
       },
       accent:{

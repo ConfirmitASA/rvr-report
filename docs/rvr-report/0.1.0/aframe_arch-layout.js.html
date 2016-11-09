@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>aframe/arch-layout.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="GetMenu.html">GetMenu</a><ul class='methods'><li data-type='method'><a href="GetMenu.html#.iteration">iteration</a></li></ul></li><li><a href="PageFetch.html">PageFetch</a><ul class='methods'><li data-type='method'><a href="PageFetch.html#.locationDeserialize">locationDeserialize</a></li><li data-type='method'><a href="PageFetch.html#.locationSerialize">locationSerialize</a></li><li data-type='method'><a href="PageFetch.html#.pageInitializer">pageInitializer</a></li><li data-type='method'><a href="PageFetch.html#fetch">fetch</a></li></ul></li><li><a href="rvr-menu.html">rvr-menu</a></li><li><a href="RVRutils.html">RVRutils</a><ul class='methods'><li data-type='method'><a href="RVRutils.html#.getPalette">getPalette</a></li><li data-type='method'><a href="RVRutils.html#.mixin">mixin</a></li></ul></li><li><a href="SourceFrame.html">SourceFrame</a><ul class='methods'><li data-type='method'><a href="SourceFrame.html#.createIframe">createIframe</a></li><li data-type='method'><a href="SourceFrame.html#load">load</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#getSeparatedCirclePositions">getSeparatedCirclePositions</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#setPositions">setPositions</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#update">update</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">aframe/arch-layout.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Created by IvanP on 31.10.2016.
+ */
+
+AFRAME.registerSystem('sticky-arch-layout', {
+  /**
+   * Function that does calculation of distribution of elements in a circulra fashoin on a semi-circle
+   * @param {{direction:Number, margin:Number, radius:Number}} data - object containing `direction (-1:right| 1:left)` in which positioning elements will take place, `margin` in rad which defines distance between elements and `radius` in meters
+   * @param {Array} mLength - Array of widths of elements starting with the one on 12 o'clock and going clockwise fo `data.direction ==-1` ar anticlockwise for `data.direction==1`
+   * @param {{x:Number, y:Number, z:Number}} startPosition - initial coordinates of the center point of the circle on which arch elements are placed
+   * */
+  getSeparatedCirclePositions: function(data, mLength, startPosition){
+    let positions=[];
+
+    let startPointOnCircle = Math.PI/2,
+      fromStart=0,
+      radius = data.radius || 2,
+      margin = data.margin/data.radius,
+      direction = data.direction || -1;
+
+
+    for(let i=0; i&lt;mLength.length; i++)
+    {
+      fromStart = direction * margin/2 + direction * Math.abs(Math.atan(mLength[i]/(2*radius)));
+      startPointOnCircle = startPointOnCircle+fromStart;
+
+      positions.push({
+        x: startPosition.x + radius*Math.cos(startPointOnCircle),
+        y: startPosition.y,
+        z: -startPosition.z - radius*Math.sin(startPointOnCircle)
+      });
+
+      startPointOnCircle = startPointOnCircle+fromStart;
+
+    }
+
+    return positions;
+
+  },
+
+  centerArch:function(data,mLengths){
+    return 180*(mLengths.reduce((a, b) => a + b, data.margin*mLengths.length)/data.radius)/(Math.PI*2);
+  },
+
+  /**
+   * Set position on child entities.
+   *
+   * @param {array} els - Child entities to set.
+   * @param {array} positions - Array of coordinates.
+   */
+  setPositions: (els, positions)=> {
+    els.forEach(function (el, i) {
+      el.setAttribute('position', positions[i]);
+    });
+  },
+
+  /**
+   * Multiply all coordinates by a scale factor and add translate.
+   *
+   * @params {array} positions - Array of coordinates in array form.
+   * @returns {array} positions
+   */
+  transform: (positions, translate, scale) => {
+    translate = [translate.x, translate.y, translate.z];
+    return positions.map(function (position) {
+      return position.map(function (point, i) {
+        return point * scale + translate[i];
+      });
+    });
+  }
+
+});
+
+/**
+ * Layout component for A-Frame.
+ */
+AFRAME.registerComponent('sticky-arch-layout', {
+  schema: {
+    margin: {default: 0.5, min: 0}, // in meters
+    radius: {default: 1, min: 0} // in meters
+  },
+
+  /**
+   * Store initial positions in case need to reset on component removal.
+   */
+  init: function () {
+    let self = this;
+    let el = this.el;
+
+    this.children = el.getChildEntities();
+    this.lengths=[];
+    this.initialPositions = [];
+
+    this.children.forEach(function getInitialPositions (childEl) {
+      if (childEl.hasLoaded) { return _getPositions(); }
+      childEl.addEventListener('loaded', _getPositions);
+      function _getPositions (e) {
+        let position = childEl.getComputedAttribute('position');
+        self.initialPositions.push(position);
+        self.lengths.push(AFRAME.utils.entity.getComponentProperty(childEl,'geometry.width'));
+        self.update();
+      }
+    });
+
+    el.addEventListener('child-attached',  (evt)=>{
+      console.log('child-attached',evt.detail.el, evt);
+      // Only update if direct child attached.
+      if (evt.detail.el.parentNode !== el) { return; }
+      this.children.push(evt.detail.el);
+      this.update();
+    });
+  },
+
+
+  /**
+   * Update child entity positions.
+   */
+  update:function(oldData){
+    let startPosition = this.el.getAttribute('position');
+    let positions = this.system.getSeparatedCirclePositions(this.data, this.lengths, startPosition);
+    this.system.setPositions(this.children, positions);
+  },
+
+  /**
+   * Reset positions.
+   */
+  remove: function () {
+    this.el.removeEventListener('child-attached', this.childAttachedCallback);
+    this.system.setPositions(this.children, this.initialPositions);
+  }
+});
+
+
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Mon Nov 07 2016 17:55:38 GMT+0300 (Russia TZ 2 Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
