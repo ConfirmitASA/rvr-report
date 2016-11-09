@@ -9,7 +9,8 @@ AFRAME.registerSystem('rvr-text', {
   schema: {
     textColor: {type:'color', default: palette.primary.textColor || '#FFF'},
     textOpacity: {type:'number', default: 1},
-    activeColor: {type:'color', default: palette.accent.darkColor || '#2196f3'},
+    activeColor: {type:'color', default: palette.primary.defaultColor || '#2196f3'},
+    hoverColor: {type:'color', default: palette.accent.darkColor || '#35f32a'},
     backgroundColor: {type:'color', default: palette.background.defaultColor || '#FFF'},
     backgroundOpacity: {type:'number', default: palette.background.opacity || '0.3'},
     scale:{type:'number',default:0.3}
@@ -21,6 +22,8 @@ AFRAME.registerSystem('rvr-text', {
    * @param {Number} options.width - item width
    * @param {Number} options.height - item height
    * @param {Boolean} [options.isLink=false] - whether the item is a link (meaning hover state and click animations will be applied)
+   * @param {Boolean} options.callback - click callback
+   * @param {Boolean} options.context - what `this` would mean in the callback
    * */
   createBackgroundPlane: (options)=>{
     let {data,width,height,isLink=false,callback,context}=options;
@@ -48,7 +51,7 @@ AFRAME.registerSystem('rvr-text', {
         'update-raycaster':'#cursor',
         'event-set__hover':{
           '_event': 'mouseenter',
-          'material.color': data.activeColor,
+          'material.color': data.hoverColor,
           'material.opacity': 0.5
         },
         'event-set__out': {
@@ -69,7 +72,7 @@ AFRAME.registerSystem('rvr-text', {
     let bg = RVRutils.createEntity(null,bgOptions);
     if(isLink){
       bg.classList.add('link');
-      bg.addEventListener('click',callback.bind(context));
+      bg.addEventListener('click',callback.bind(context),true);
     }
     return bg;
   },
@@ -81,14 +84,15 @@ AFRAME.registerSystem('rvr-text', {
    * @param {Number} options.width - item width in pixels
    * @param {Number} options.x - x position of the label (calculated against background width)
    * @param {Number} options.y - y position of the label (calculated against background height)
+   * @param {Boolean} [options.isActive=false] - whether the link is selected
    * */
   createText: (options)=>{
-    let {data,text,x,y,width}=options;
+    let {data,text,x,y,width,isActive=false}=options;
 
     return RVRutils.createEntity(null,{
       'bmfont-text':{
         text,
-        color: data.textColor,
+        color: isActive? data.activeColor : data.textColor,
         align: 'left',
         width,
         opacity: data.textOpacity

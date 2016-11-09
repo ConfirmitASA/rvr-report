@@ -4,6 +4,7 @@
 
 import GetMenu from 'rvr-get-menu';
 import SourceFrame from './source-frame';
+import RVRutils from 'rvr-utils';
 
 class PageFetch {
   /**
@@ -36,7 +37,7 @@ class PageFetch {
    * @returns {Promise.<Window>} Returns a promise with a contentWindow of the iFrame
    * */
   static pageInitializer(){
-    let pagelocation = PageFetch.locationDeserialize();
+    let pagelocation = RVRutils.locationDeserialize();
     return this.fetch({
       pageid: !pagelocation.query.frompage ? this.menuItems[0].pageID : pagelocation.query.frompage
     });
@@ -53,17 +54,24 @@ class PageFetch {
     if(swapObject){
       let location;
       if(fromFrame){
-        location = PageFetch.locationDeserialize(this.sourceFrame.element.contentWindow.location);
+        location = RVRutils.locationDeserialize(this.sourceFrame.element.contentWindow.location);
         if(!swapObject.state){// add a correct state from a loaded page if not overriden
-          swapObject['state']=this.sourceFrame.element.contentWindow.document.getElementById('PageStateId').value;
+          let psi = this.sourceFrame.element.contentWindow.document.querySelector('#PageStateId');
+          if(psi)swapObject['state']=psi.value;
         }
       } else {
-        location = PageFetch.locationDeserialize(window.location);
+        location = RVRutils.locationDeserialize(window.location);
       }
       for(let key in swapObject){
         location.query[key] = swapObject[key];
       }
-      let src = PageFetch.locationSerialize(location);
+      /**
+       * the location Object
+       * @type {Object}
+       * @memberOf PageFetch
+       * */
+      this.location = location;
+      let src = RVRutils.locationSerialize(location);
       if(src){
         return this.sourceFrame.load(src);
       } else {
@@ -74,35 +82,6 @@ class PageFetch {
     }
   }
 
-  /**
-   * turns `window.location` object into an object with params as named keys necessary to reconstruct the URL
-   * @param {Object=} [location = window.location] - a window.location object, by default of the host window where the script is executed
-   * @returns {{path:String, query:Object}} a `location` object
-   * */
-  static locationDeserialize(location = window.location){
-    let o = {
-      path: location.origin + location.pathname,
-      query:{}
-    };
-    location.search.substring(1).split(/&/).forEach(pair=>{
-      let aPair= pair.split(/=/);
-      o.query[aPair[0].toLowerCase()] = aPair[1]
-    });
-    return o
-  }
-
-  /**
-   * Turns a `location` object (result of `locationDeserialize`) into a URL
-   * @param {{path:String, query:Object}} location - an object with params and a url
-   * @returns {String} - a URL string
-   * */
-  static locationSerialize(location){
-    let query=[];
-    for(let key in location.query){
-      query.push([key,location.query[key]].join('='));
-    }
-    return location.path + '?' + query.join('&');
-  }
 }
 
 export default PageFetch

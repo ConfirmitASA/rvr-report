@@ -10,10 +10,17 @@ let palette = RVRutils.getPalette(variables);
 
 AFRAME.registerSystem('rvr-menu',{
   callback:function(e){
-    let target = e.detail.target;
-    RVRutils.classFollows('active',target,this.children.find(child=>child.classList.contains('active')));
+    let target, previous;
+    target = e.detail.target && e.detail.target.classList.contains('link')? e.detail.target : e.path.find(el=>el.classList.contains('link'));
+    previous = this.children.find(child=>child.firstElementChild.classList.contains('active'));
+    if(previous){
+      previous.firstElementChild.firstElementChild.setAttribute('bmfont-text','color',this.data.textColor);
+      previous = previous.firstElementChild;
+    }
+    target.firstElementChild.setAttribute('bmfont-text','color',this.data.activeColor);
+    RVRutils.classFollows('active',target,previous);
     RVR.state.page.sourceWindow = RVR.state.page.fetch({pageid:target.id});
-  }
+  },
 });
 
 AFRAME.registerComponent(
@@ -29,7 +36,8 @@ AFRAME.registerComponent(
    * @param {Number} [radius=1] - arch radius in meters
    * @param {Color} [textColor= palette.primary.textColor || '#FFF'] - arch radius in meters
    * @param {Number} [textOpacity=1] - opacity of the text
-   * @param {Color} [activeColor= palette.accent.darkColor || '#2196f3'] - color of the background for label when it's hovered/active
+   * @param {Color} [activeColor= palette.primary.defaultColor || '#2196f3'] - color of the background for label when it's active
+   * @param {Color} [hoverColor= palette.accent.darkColor || '#35f32a'] - color of the background for label when it's hovered
    * @param {Color} [backgroundColor= palette.background.defaultColor || '#FFF'] - color of the background for label
    * @param {Color} [backgroundOpacity= palette.background.opacity || '0.3'] - opacity of the background for label
    * @param {Number} [scale=0.3] - scale of the text component (it's quite large, so it has to be scaled down)
@@ -53,6 +61,7 @@ AFRAME.registerComponent(
     const CHAR_WIDTH_M = 0.1024;
     const CHAR_HEIGHT_M = 0.1280;
     const textSystem = this.el.sceneEl.systems['rvr-text'];
+    const location = RVR.state.page.location;
 
     /**
      * child entities of the menu entity
@@ -64,6 +73,7 @@ AFRAME.registerComponent(
     menu.forEach(item=>{
       const bgWidth = (CHAR_WIDTH_M * item.label.length)+CHAR_WIDTH_M*2;
       const bgHeight = CHAR_HEIGHT_M*2;
+      const isActive = location.query.pageid==item.pageID;
 
       // the container is needed to layout the items properly, so that if they are clickable, they have a local coordinate system
       let menuItemContainer = RVRutils.createEntity(null,{
@@ -83,7 +93,9 @@ AFRAME.registerComponent(
 
       // background for item
       let menuItemBackground = textSystem.createBackgroundPlane({data, width:bgWidth, height:bgHeight, isLink:true, callback:this.system.callback, context:this});
+
       menuItemBackground.id = `id_${item.pageID}`;
+      if(isActive)menuItemBackground.classList.add('active');
 
       // item text
       let menuItem = textSystem.createText({
@@ -91,7 +103,8 @@ AFRAME.registerComponent(
         width: item.label.length * CHAR_WIDTH_PX,
         text:  item.label,
         x:     0-(bgWidth/2)+CHAR_WIDTH_M,
-        y:     0-(bgHeight/2 - CHAR_HEIGHT_M/2)
+        y:     0-(bgHeight/2 - CHAR_HEIGHT_M/2),
+        isActive: isActive
       });
 
       this.lengths.push(bgWidth*data.scale);
@@ -103,8 +116,6 @@ AFRAME.registerComponent(
       menuItemContainer.appendChild(menuItemBackground);
       parent.appendChild(menuItemContainer);
     });
-
-
   },
 
   update:function(oldData){
