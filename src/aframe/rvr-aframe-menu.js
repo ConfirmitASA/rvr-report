@@ -19,7 +19,7 @@ AFRAME.registerSystem('rvr-menu',{
     }
     target.firstElementChild.setAttribute('bmfont-text','color',this.data.activeColor);
     RVRutils.classFollows('active',target,previous);
-    RVR.state.page.sourceWindow = RVR.state.page.fetch({pageid:target.id});
+    RVR.state.page.sourceWindow = RVR.state.page.fetch({pageid:target.id.substr(3)});
   },
 });
 

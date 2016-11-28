@@ -29,14 +29,17 @@ class PageFetch {
      * @type {Promise.<Window>}
      * @memberOf PageFetch
      * */
-     this.sourceWindow = PageFetch.pageInitializer.call(this);
+    this.sourceWindow = this.pageInitializer();
+    this._pageLoadEvent = RVRutils.newEvent('rvr-source-loaded');
+
+
   }
 
   /**
    * Function that initializes to the first page in report if the VR mode is launched with no `location.query.frompage` parameter in URL, otherwise launches with the pageid specified in `frompage` parameter
    * @returns {Promise.<Window>} Returns a promise with a contentWindow of the iFrame
    * */
-  static pageInitializer(){
+  pageInitializer(){
     let pagelocation = RVRutils.locationDeserialize();
     return this.fetch({
       pageid: !pagelocation.query.frompage ? this.menuItems[0].pageID : pagelocation.query.frompage
@@ -73,7 +76,10 @@ class PageFetch {
       this.location = location;
       let src = RVRutils.locationSerialize(location);
       if(src){
-        return this.sourceFrame.load(src);
+        return this.sourceFrame.load(src).then(sourceFrame=>{
+          document.dispatchEvent(this._pageLoadEvent);
+          return sourceFrame
+        });
       } else {
         throw new Error('src can\'t be calculated');
       }
