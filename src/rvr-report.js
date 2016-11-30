@@ -8,7 +8,8 @@ import PageFetch from "./page-fetch/page-fetch"
 
 /*processor functions*/
 import RVRprocessor from "./processors/rvr-processor"
-require("./processors/pageTitle");
+require("./processors/pageTitle-processor");
+require("./processors/aggregatedTable-processor");
 
 
 class RVRreport {
@@ -17,6 +18,7 @@ class RVRreport {
 
     document.addEventListener('rvr-source-loaded',()=>this.onSourceLoad(),false);
     this.page = new PageFetch();
+    this._componentRegistry={};
   }
 
   /**
@@ -27,6 +29,7 @@ class RVRreport {
     if(elements != null){
       elements.forEach(el=>RVRreport.elementDetection(el));
     }
+
   }
 
   /**
@@ -62,6 +65,10 @@ class RVRreport {
         aux=[]; // auxiliary classes of RVR that shouldn't be considered as entities that require processing
     if(aux.indexOf(type)>=0)return;
     RVRprocessor.process(type,element);
+  }
+
+  registerComponent(type,meta,guid = RVRutils.guid()){
+    this._componentRegistry[guid] = {id:guid,type,meta};
   }
 }
 

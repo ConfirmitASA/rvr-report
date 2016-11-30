@@ -1,14 +1,16 @@
 #RVR report
 
-This is a template guide for Reportal VR report.
+This is a template guide for Reportal VR report which is an automated script that takes a Reportal Report and processes its data to further present it in VR mode
 
-Below goes a list of components:
+#Processors and valid classes
 
-###Title
+Processors are introduced for automatic feature-detection and processing of elements in Reportal. All processing classes must correspond to a list of processors below, prefixed with `.rvr-`. Thus a processing class for a page title would be `.rvr-pageTitle` on a page title Component
+
+### pageTitle
 
 Needs to have a `.rvr-pageTitle` class on it for a RVR to fetch it.
 
-### Commands (configured in package.json)
+# Commands (configured in package.json)
 
 - `npm install` installs all dependencies of the project
 - `npm run build:prd` generates minified build files under `/dist` folder 

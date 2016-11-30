@@ -77,7 +77,9 @@ AFRAME.registerSystem('sticky-arch-layout', {
 AFRAME.registerComponent('sticky-arch-layout', {
   schema: {
     margin: {default: 0.5, min: 0}, // in meters
-    radius: {default: 1, min: 0} // in meters
+    radius: {default: 1, min: 0}, // in meters
+    turn:{type:'boolean', default:false},
+    turnTo:{type:'vec3'}
   },
 
   /**
@@ -116,9 +118,17 @@ AFRAME.registerComponent('sticky-arch-layout', {
    * Update child entity positions.
    */
   update:function(oldData){
-    let startPosition = this.el.getAttribute('position');
+    let startPosition = this.el.getAttribute('position') || {x:0, y:0, z:0};
     let positions = this.system.getSeparatedCirclePositions(this.data, this.lengths, startPosition);
     this.system.setPositions(this.children, positions);
+    positions.forEach((position,index)=>{
+      console.log(this.data.turn);
+      if(this.data.turn){
+        let target = this.data.turnTo;
+        setTimeout(()=>this.children[index].object3D.lookAt(new THREE.Vector3(target.x, target.y, target.z)),0);
+      }
+    });
+
   },
 
   /**

@@ -19,5 +19,6 @@ RVRutils.mixin(window.RVR,{
 
 require('./aframe/arch-layout');
 require('./aframe/rvr-aframe-menu');
+require('./aframe/rvr-table');
 
 export default RVR
