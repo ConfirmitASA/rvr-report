@@ -20,9 +20,9 @@ export default {
         textColor: "#FFFFFF"
       },
       background:{
-        opacity:0.3,
+        opacity:0.2,
         darkColor: "#f6f6f6",
-        defaultColor: "#ffffff",
+        defaultColor: "#000",
         lightColor: "#ffffff"
       },
       default:{

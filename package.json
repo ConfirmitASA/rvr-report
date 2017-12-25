@@ -67,6 +67,7 @@
     "aframe-animation-component": "^3.0.1",
     "aframe-bmfont-text-component": "^0.1.4",
     "aframe-event-set-component": "^3.0.1",
+    "aframe-htmltexture-component": "git+https://github.com/revolunet/htmltexture-component.git",
     "aframe-layout-component": "^3.0.1",
     "r-aggregated-table": "github:confirmitasa/r-aggregated-table",
     "r-reportal-base": "github:confirmitasa/r-reportal-base",

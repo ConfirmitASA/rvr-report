@@ -10,7 +10,9 @@ class AframeAggregatedTable extends RVRutils{
     let row = RVRutils.createEntity(null,{
       'sticky-arch-layout': {
         margin: data.margin,
-        radius: data.radius
+        radius: data.radius,
+        turn:data.turn,
+        turnTo:data.turnTo
       }
     });
     rowData.forEach((item,index)=>{
@@ -24,7 +26,7 @@ class AframeAggregatedTable extends RVRutils{
   }
 
   static createCell({data,length=1,label,isLink=false,callback,context,isActive=false}={}){
-    const CHAR_WIDTH_PX = 30;
+    const CHAR_WIDTH_PX = 25;
     const CHAR_WIDTH_M = 0.1024;
     const CHAR_HEIGHT_M = 0.128;
     const bgWidth = (CHAR_WIDTH_M * length)+CHAR_WIDTH_M*2;

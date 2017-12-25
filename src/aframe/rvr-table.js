@@ -53,8 +53,9 @@ AFRAME.registerComponent(
     layout: {type:'string',default:'sticky-arch-layout'},
     turn:{type:'boolean', default:false},
     turnTo:{type:'vec3'},
-    margin: {default: 0.5, min: 0}, // in meters
+    margin: {default: 0.05, min: 0}, // in meters
     radius: {default: 1, min: 0}, // in meters
+    lockAxis:{type:'string'}
   }, RVRtext.schema()),
 
   init: function(){
@@ -70,14 +71,16 @@ AFRAME.registerComponent(
     this.children = []; // child entities of the menu entity
     this.lengths = [];
     let table = RVRutils.createEntity(null,{});
+    console.time('aggregatedTable.rowiterator');
     rows.forEach((rowData,i)=>{
       let tr = AframeAggregatedTable.createRow(data,rowData,entry.dataCharLength);
-      let rowOffset = 0.2+ (0.256*(rows.length-1-i))*data.scale;
+      let rowOffset = ((0.256*data.scale)* 0.8 * (rows.length-1-i))+data.margin;
       tr.setAttribute('position',{x:0,y:rowOffset,z:0});
       // attach to parent
       table.appendChild(tr);
-      this.el.appendChild(table);
+      parent.appendChild(table);
     });
+    console.timeEnd('aggregatedTable.rowiterator');
   },
 
   update:function(oldData){
@@ -89,7 +92,11 @@ AFRAME.registerComponent(
         positions.forEach((position,index)=>{
           if(this.data.turn){
             let target = this.data.turnTo;
-            setTimeout(()=>this.children[index].object3D.lookAt(new THREE.Vector3(target.x, target.y, target.z)),0);
+            setTimeout(()=>{
+              this.children[index].object3D.lookAt(new THREE.Vector3(target.x, target.y, target.z));
+
+            },0
+            );
           }
         });
           this.el.setAttribute('rotation',`0 ${layoutSystem.centerArch(this.data,this.lengths)} 0`);

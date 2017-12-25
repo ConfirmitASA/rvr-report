@@ -4,6 +4,7 @@ require('aframe-event-set-component');
 require('aframe-animation-component');
 require('aframe-bmfont-text-component');
 
+
 import variables from "./variables";
 import RVRutils from "rvr-utils"
 import RVRreport from "./rvr-report"
@@ -20,5 +21,8 @@ RVRutils.mixin(window.RVR,{
 require('./aframe/arch-layout');
 require('./aframe/rvr-aframe-menu');
 require('./aframe/rvr-table');
+import drawComponent from 'aframe-draw-component'
+AFRAME.registerComponent("draw", drawComponent.component);
+import 'aframe-htmltexture-component'
 
 export default RVR

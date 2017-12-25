@@ -76,10 +76,11 @@ AFRAME.registerSystem('sticky-arch-layout', {
  */
 AFRAME.registerComponent('sticky-arch-layout', {
   schema: {
-    margin: {default: 0.5, min: 0}, // in meters
+    margin: {default: 0.05, min: 0}, // in meters
     radius: {default: 1, min: 0}, // in meters
     turn:{type:'boolean', default:false},
-    turnTo:{type:'vec3'}
+    turnTo:{type:'vec3'},
+    lockAxis:{type:'string'}
   },
 
   /**
@@ -99,7 +100,8 @@ AFRAME.registerComponent('sticky-arch-layout', {
       function _getPositions (e) {
         let position = childEl.getComputedAttribute('position');
         self.initialPositions.push(position);
-        self.lengths.push(AFRAME.utils.entity.getComponentProperty(childEl,'geometry.width'));
+        let scale = AFRAME.utils.entity.getComponentProperty(childEl,'scale').x || 1;
+        self.lengths.push(AFRAME.utils.entity.getComponentProperty(childEl,'geometry.width')*scale);
         self.update();
       }
     });
@@ -122,9 +124,9 @@ AFRAME.registerComponent('sticky-arch-layout', {
     let positions = this.system.getSeparatedCirclePositions(this.data, this.lengths, startPosition);
     this.system.setPositions(this.children, positions);
     positions.forEach((position,index)=>{
-      console.log(this.data.turn);
       if(this.data.turn){
         let target = this.data.turnTo;
+        if(this.data.lockAxis!=''){target[this.data.lockAxis]=position[this.data.lockAxis]}
         setTimeout(()=>this.children[index].object3D.lookAt(new THREE.Vector3(target.x, target.y, target.z)),0);
       }
     });
